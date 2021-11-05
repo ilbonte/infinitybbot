@@ -1,3 +1,6 @@
+import json
+from pprint import pprint
+
 import telegram  # this is from python-telegram-bot package
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -23,10 +26,16 @@ class PingView(APIView):
     def post(self, request, format=None):
         bot = telegram.Bot(token=settings.BOT_TOKEN)
 
-        update = telegram.Update.de_json(request.get_json(force=True), bot)
+        req_js = json.loads(request.body)
+        pprint(req_js)
 
-        chat_id = update.message.chat.id
-        msg_id = update.message.message_id
+        # update = telegram.Update.de_json(request.get_json(force=True), bot)
+
+        chat_id = req_js['message']['chat']['id']
+
+        print(chat_id)
+
+        msg_id = req_js['message']['message_id']
 
         bot.sendMessage(chat_id=chat_id, text="Pong", reply_to_message_id=msg_id)
 
